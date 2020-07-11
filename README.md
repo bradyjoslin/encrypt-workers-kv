@@ -23,22 +23,6 @@ An overview of the logical steps used for encryption and decryption in `crypto.j
 1. Decrypt the input data using the AES-GCM key and the iv from the ArrayBuffer.
 1. Decode the decrypted value to a string.
 
-## Deploying
-
-Configure wrangler.toml with your account information.
-
-Create a new Workers KV namespace and add the configuration to wrangler.toml
-
-`wrangler kv:namespace create "ENCRYPTED"`
-
-Add the password for PBKDF2 as a Workers Secret
-
-`wrangler secret put PASSWORD`
-
-Deploy
-
-`wrangler publish`
-
 ## Functions
 
 <dl>
@@ -75,6 +59,22 @@ Wrapper on Workers KV get command that decrypts data after getting from storage
 | namespace | <code>any</code>    | the binding to the namespace that script references         |
 | key       | <code>string</code> | the key in the namespace used to reference the stored value |
 | password  | <code>string</code> | the password used to encrypt the data                       |
+
+## Deploying
+
+Configure wrangler.toml with your account information.
+
+Create a new Workers KV namespace and add the configuration to wrangler.toml
+
+`wrangler kv:namespace create "ENCRYPTED"`
+
+Add the password for PBKDF2 as a Workers Secret
+
+`wrangler secret put PASSWORD`
+
+Deploy
+
+`wrangler publish`
 
 ## References
 
