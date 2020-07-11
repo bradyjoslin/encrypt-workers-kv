@@ -23,6 +23,22 @@ An overview of the logical steps used for encryption and decryption in `crypto.j
 1. Decrypt the input data using the AES-GCM key and the iv from the base64 string.
 1. Decode the decrypted value to a string.
 
+## Deploying
+
+Configure wrangler.toml with your account information.
+
+Create a new Workers KV namespace and add the configuration to wrangler.toml
+
+`wrangler kv:namespace create "ENCRYPTED"`
+
+Add the password for PBKDF2 as a Workers Secret
+
+`wrangler secret put PASSWORD`
+
+Deploy
+
+`wrangler publish`
+
 ## References
 
 - [Ernie Turner: Dodging Web Crypto API Landmines | Web Rebels 2018](https://www.youtube.com/watch?v=lbt2_M1hZeg)
