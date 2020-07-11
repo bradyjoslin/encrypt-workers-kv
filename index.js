@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from './crypto.js'
+import { putEncryptedKV, getDecryptedKV } from './crypto.js'
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
@@ -6,19 +6,13 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
   const password = PASSWORD
+  let data =
+    'This is a long message with emojis 🏋️‍♀️, urls https://bradyjoslin.com, and json {"hello":"world!"}.'
 
-  let data = 'secret data'
+  await putEncryptedKV(ENCRYPTED, 'data', data, password)
+  let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
 
-  let encryptedData = await encrypt(data, password)
-  ENCRYPTED.put('data', encryptedData)
-
-  let kvEncryptedData = await ENCRYPTED.get('data')
-  let decryptedData = await decrypt(kvEncryptedData, password)
-
-  return new Response(
-    `'${data}' was encrypted to <br/> ${encryptedData} <br/> then decrypted back to '${decryptedData}'`,
-    {
-      headers: { 'content-type': 'text/html' },
-    },
-  )
+  return new Response(`input: '${data}' <br/> output: '${decryptedData}'`, {
+    headers: { 'content-type': 'text/html; charset=utf-8' },
+  })
 }

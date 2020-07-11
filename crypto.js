@@ -1,15 +1,37 @@
-const buff_to_base64 = buff => btoa(String.fromCharCode.apply(null, buff))
-
-const base64_to_buf = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(null))
-
 const enc = new TextEncoder()
 const dec = new TextDecoder()
 
-export const encrypt = async (data, password) =>
-  await encryptData(data, password)
+/**
+ * Wrapper on Workers KV put command that encrypts data prior to storage
+ *
+ * @param {any} namespace the binding to the namespace that script references
+ * @param {string} key the key in the namespace used to reference the stored value
+ * @param {any} data the data to encrypt and store in KV
+ * @param {string} password the password used to encrypt the data
+ * @param {Object} options optional KV put fields
+ * */
+async function putEncryptedKV(namespace, key, data, password, options = {}) {
+  const encryptedData = await encryptData(data, password)
+  // TODO: add try catch on puts
+  if (options === {}) {
+    await namespace.put(key, encryptedData)
+  } else {
+    await namespace.put(key, encryptedData, options)
+  }
+  return encryptedData
+}
 
-export const decrypt = async (encryptedData, password) =>
-  (await decryptData(encryptedData, password)) || 'decryption failed!'
+/**
+ * Wrapper on Workers KV get command that decrypts data after getting from storage
+ *
+ * @param {any} namespace the binding to the namespace that script references
+ * @param {string} key the key in the namespace used to reference the stored value
+ * @param {string} password the password used to encrypt the data
+ * */
+async function getDecryptedKV(namespace, key, password) {
+  let kvEncryptedData = await namespace.get(key, 'arrayBuffer')
+  return await decryptData(kvEncryptedData, password)
+}
 
 const getPasswordKey = password =>
   crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, [
@@ -21,7 +43,7 @@ const deriveKey = (passwordKey, salt, keyUsage) =>
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: 100000,
+      iterations: 10000,
       hash: 'SHA-256',
     },
     passwordKey,
@@ -55,8 +77,7 @@ async function encryptData(secretData, password) {
       new Uint8Array(encryptedContentArr),
       salt.byteLength + iv.byteLength,
     )
-    const base64Buff = buff_to_base64(buff)
-    return base64Buff
+    return buff.buffer
   } catch (e) {
     console.log(`Error - ${e}`)
     return ''
@@ -65,7 +86,7 @@ async function encryptData(secretData, password) {
 
 async function decryptData(encryptedData, password) {
   try {
-    const encryptedDataBuff = base64_to_buf(encryptedData)
+    const encryptedDataBuff = new Uint8Array(encryptedData)
     const salt = encryptedDataBuff.slice(0, 16)
     const iv = encryptedDataBuff.slice(16, 16 + 12)
     const data = encryptedDataBuff.slice(16 + 12)
@@ -85,3 +106,5 @@ async function decryptData(encryptedData, password) {
     return ''
   }
 }
+
+export { putEncryptedKV, getDecryptedKV }
