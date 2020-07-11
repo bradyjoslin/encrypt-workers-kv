@@ -39,6 +39,43 @@ Deploy
 
 `wrangler publish`
 
+## Functions
+
+<dl>
+<dt><a href="#putEncryptedKV">putEncryptedKV(namespace, key, data, password, options)</a></dt>
+<dd><p>Wrapper on Workers KV put command that encrypts data prior to storage</p>
+</dd>
+<dt><a href="#getDecryptedKV">getDecryptedKV(namespace, key, password)</a></dt>
+<dd><p>Wrapper on Workers KV get command that decrypts data after getting from storage</p>
+</dd>
+</dl>
+
+<a name="putEncryptedKV"></a>
+
+### putEncryptedKV(namespace, key, data, password, options)
+
+Wrapper on Workers KV put command that encrypts data prior to storage
+
+| Param     | Type                | Description                                                                                                          |
+| --------- | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| namespace | <code>any</code>    | the binding to the namespace that script references                                                                  |
+| key       | <code>string</code> | the key in the namespace used to reference the stored value                                                          |
+| data      | <code>any</code>    | the data to encrypt and store in KV                                                                                  |
+| password  | <code>string</code> | the password used to encrypt the data                                                                                |
+| options   | <code>Object</code> | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+
+<a name="getDecryptedKV"></a>
+
+### getDecryptedKV(namespace, key, password)
+
+Wrapper on Workers KV get command that decrypts data after getting from storage
+
+| Param     | Type                | Description                                                 |
+| --------- | ------------------- | ----------------------------------------------------------- |
+| namespace | <code>any</code>    | the binding to the namespace that script references         |
+| key       | <code>string</code> | the key in the namespace used to reference the stored value |
+| password  | <code>string</code> | the password used to encrypt the data                       |
+
 ## References
 
 - [Ernie Turner: Dodging Web Crypto API Landmines | Web Rebels 2018](https://www.youtube.com/watch?v=lbt2_M1hZeg)
