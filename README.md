@@ -1,4 +1,4 @@
-# Workers KV Web Crypto Encryption and Decryption Example
+# Example Encrypting Workers KV Using Web Crypto
 
 Demonstrates a way to encrypt and decrypt data using the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) with [Cloudflare Workers](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to store encrypted data in [Workers KV](https://developers.cloudflare.com/workers/reference/storage).
 
