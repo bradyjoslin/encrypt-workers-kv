@@ -1,0 +1,10 @@
+account_id = "d3765f1c5f3d3ed76be2701b78510d29"
+name = "encrypted-workers-kv"
+route = ""
+type = "webpack"
+workers_dev = true
+zone_id = ""
+
+kv_namespaces = [
+  {binding = "ENCRYPTED", id = "4ae4e07b32274a74aa36b113e69b0e30"},
+]
