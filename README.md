@@ -40,13 +40,15 @@ An overview of the logical steps used for encryption and decryption in `crypto.j
 
 Wrapper on Workers KV put command that encrypts data prior to storage
 
-| Param     | Type                | Description                                                                                                          |
-| --------- | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| namespace | <code>any</code>    | the binding to the namespace that script references                                                                  |
-| key       | <code>string</code> | the key in the namespace used to reference the stored value                                                          |
-| data      | <code>any</code>    | the data to encrypt and store in KV                                                                                  |
-| password  | <code>string</code> | the password used to encrypt the data                                                                                |
-| options   | <code>Object</code> | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+| Param     | Type                     | Description                                                                                                          |
+| --------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| namespace | <code>KVNamespace</code> | the binding to the namespace that script references                                                                  |
+| key       | <code>string</code>      | the key in the namespace used to reference the stored value                                                          |
+| data      | <code>string</code>      | the data to encrypt and store in KV                                                                                  |
+| password  | <code>string</code>      | the password used to encrypt the data                                                                                |
+| options   | <code>Object</code>      | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+
+Returns encrypted value as ArrayBuffer or null for exceptions - `Promise<ArrayBuffer | null>`.
 
 <a name="getDecryptedKV"></a>
 
@@ -54,11 +56,13 @@ Wrapper on Workers KV put command that encrypts data prior to storage
 
 Wrapper on Workers KV get command that decrypts data after getting from storage
 
-| Param     | Type                | Description                                                 |
-| --------- | ------------------- | ----------------------------------------------------------- |
-| namespace | <code>any</code>    | the binding to the namespace that script references         |
-| key       | <code>string</code> | the key in the namespace used to reference the stored value |
-| password  | <code>string</code> | the password used to encrypt the data                       |
+| Param     | Type                     | Description                                                 |
+| --------- | ------------------------ | ----------------------------------------------------------- |
+| namespace | <code>KVNamespace</code> | the binding to the namespace that script references         |
+| key       | <code>string</code>      | the key in the namespace used to reference the stored value |
+| password  | <code>string</code>      | the password used to encrypt the data                       |
+
+Returns decrypted value as string or null for exceptions - `Promise<string | null>`
 
 ## Deploying
 
