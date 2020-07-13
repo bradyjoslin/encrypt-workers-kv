@@ -11,7 +11,7 @@ const dec = new TextDecoder()
  * @param {string} data the data to encrypt and store in KV
  * @param {string} password the password used to encrypt the data
  * @param {Object} options optional KV put fields
- * @returns {Promise<ArrayBuffer | null>} Encrypted value as ArrayBuffer or null for exceptions
+ * @returns {Promise<ArrayBuffer | null>} encrypted value as ArrayBuffer or null for exceptions
  * */
 async function putEncryptedKV(
   namespace: KVNamespace,
@@ -46,7 +46,7 @@ async function putEncryptedKV(
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} password the password used to encrypt the data
- * @returns {Promise<string | null>} Decrypted value as string or null for exceptions
+ * @returns {Promise<string | null>} decrypted value as string or null for exceptions
  * */
 async function getDecryptedKV(
   namespace: KVNamespace,
