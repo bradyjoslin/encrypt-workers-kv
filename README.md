@@ -6,7 +6,7 @@ This basic example encrypts a value and stores it in Workers KV as an ArrayBuffe
 
 ## Logic Flow
 
-An overview of the logical steps used for encryption and decryption in `crypto.js`.
+An overview of the logical steps used for encryption and decryption in `crypto.ts`.
 
 **Encryption:**
 
