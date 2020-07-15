@@ -1,32 +1,17 @@
 {
-  "name": "pname",
-  "version": "1.0.0",
-  "description": "Cloudflare worker TypeScript template",
-  "main": "index.js",
+  "name": "encrypted-workers-kv",
+  "version": "0.0.1",
+  "description": "Wrapper on Workers KV to store encrypted values",
+  "main": "./dist/crypto.ts",
+  "types": "./dist/main.d.ts",
   "scripts": {
-    "build": "webpack",
-    "dev": "NODE_ENV=development npm run build",
-    "docs": "jsdoc2md *.js > api.md",
-    "format": "prettier --write '**/*.{ts,js,css,json,md}'",
-    "test:clean": "rimraf ./transpiled/src ./transpiled/test",
-    "test": "npm run test:clean && npm run transpile && mocha --require source-map-support/register --recursive transpiled/test",
-    "transpile": "tsc --project ./test"
+    "build": "tsc --declaration"
   },
-  "author": "author",
-  "license": "MIT OR Apache-2.0",
+  "author": "Brady Joslin [brady@bradyjoslin.com]",
+  "license": "MIT",
   "devDependencies": {
-    "@cloudflare/workers-types": "^1.0.9",
-    "@types/chai": "^4.2.11",
-    "@types/mocha": "^5.2.7",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.3",
-    "prettier": "^1.19.1",
-    "rimraf": "^3.0.2",
-    "service-worker-mock": "^2.0.5",
-    "ts-loader": "^6.2.2",
-    "typescript": "^3.9.3",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11",
-    "jsdoc-to-markdown": "^6.0.1"
+    "prettier": "^2.0.5",
+    "typescript": "^3.9.6",
+    "@cloudflare/workers-types": "^1.0.9"
   }
 }
