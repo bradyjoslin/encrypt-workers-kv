@@ -1,4 +1,10 @@
 import { KVNamespace } from '@cloudflare/workers-types'
+import {
+  PutError,
+  NotFoundError,
+  DecryptionError,
+  EncryptionError,
+} from './errors'
 
 const enc = new TextEncoder()
 const dec = new TextDecoder()
@@ -11,7 +17,7 @@ const dec = new TextDecoder()
  * @param {string} data the data to encrypt and store in KV
  * @param {string} password the password used to encrypt the data
  * @param {Object} options optional KV put fields
- * @returns {Promise<ArrayBuffer | null>} encrypted value as ArrayBuffer or null for exceptions
+ * @returns {Promise<ArrayBuffer>} a promise for an encrypted value as ArrayBuffer
  * */
 async function putEncryptedKV(
   namespace: KVNamespace,
@@ -22,12 +28,15 @@ async function putEncryptedKV(
     expiration?: string | number
     expirationTtl?: string | number
   },
-): Promise<ArrayBuffer | null> {
+): Promise<ArrayBuffer> {
+  let encryptedData
   try {
-    const encryptedData = await encryptData(data, password)
-    if (!encryptedData) {
-      throw new Error('Encryption failed, nothing written to KV!')
-    }
+    encryptedData = await encryptData(data, password)
+  } catch (e) {
+    throw e
+  }
+
+  try {
     if (options) {
       await namespace.put(key, encryptedData)
     } else {
@@ -35,8 +44,7 @@ async function putEncryptedKV(
     }
     return encryptedData
   } catch (e) {
-    console.log(`Error - ${e}`)
-    return null
+    throw new PutError(`Error putting value to kv: ${e.message}`)
   }
 }
 
@@ -46,24 +54,23 @@ async function putEncryptedKV(
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} password the password used to encrypt the data
- * @returns {Promise<string | null>} decrypted value as string or null for exceptions
+ * @returns {Promise<string>} a promise for a decrypted value as string
  * */
 async function getDecryptedKV(
   namespace: KVNamespace,
   key: string,
   password: string,
-): Promise<string | null> {
+): Promise<string> {
   let kvEncryptedData = await namespace.get(key, 'arrayBuffer')
   if (kvEncryptedData === null) {
-    console.log(`could not find ${key} in your namespace`)
-    return null
+    throw new NotFoundError(`could not find ${key} in your namespace`)
   }
-  let decryptedData = await decryptData(kvEncryptedData, password)
-  if (decryptedData === null) {
-    console.log(`decryption failed for ${key} in your namespace`)
-    return null
+  try {
+    let decryptedData = await decryptData(kvEncryptedData, password)
+    return decryptedData
+  } catch (e) {
+    throw e
   }
-  return decryptedData
 }
 
 const getPasswordKey = (password: string): PromiseLike<CryptoKey> =>
@@ -92,7 +99,7 @@ const deriveKey = (
 async function encryptData(
   secretData: string,
   password: string,
-): Promise<ArrayBuffer | null> {
+): Promise<ArrayBuffer> {
   try {
     const salt = crypto.getRandomValues(new Uint8Array(16))
     const iv = crypto.getRandomValues(new Uint8Array(12))
@@ -119,15 +126,14 @@ async function encryptData(
     )
     return buff.buffer
   } catch (e) {
-    console.log(`Error - ${e}`)
-    return null
+    throw new EncryptionError(`Error encrypting value: ${e.message}`)
   }
 }
 
 async function decryptData(
   encryptedData: ArrayBuffer,
   password: string,
-): Promise<string | null> {
+): Promise<string> {
   try {
     const encryptedDataBuff = new Uint8Array(encryptedData)
     const salt = encryptedDataBuff.slice(0, 16)
@@ -145,8 +151,7 @@ async function decryptData(
     )
     return dec.decode(decryptedContent)
   } catch (e) {
-    console.log(`Error - ${e}`)
-    return null
+    throw new DecryptionError(`Error decrypting value: ${e.message}`)
   }
 }
 
