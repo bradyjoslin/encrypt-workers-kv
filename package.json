@@ -5,13 +5,16 @@
   "main": "./encrypted-workers-kv/index.ts",
   "types": "./encrypted-workers-kv/index.d.ts",
   "scripts": {
-    "build": "tsc --declaration"
+    "build": "tsc --declaration",
+    "test": "ava"
   },
   "author": "Brady Joslin [brady@bradyjoslin.com]",
   "license": "MIT",
   "devDependencies": {
+    "@cloudflare/workers-types": "^1.0.9",
+    "ava": "^3.10.1",
+    "node-fetch": "^2.6.0",
     "prettier": "^2.0.5",
-    "typescript": "^3.9.6",
-    "@cloudflare/workers-types": "^1.0.9"
+    "typescript": "^3.9.6"
   }
 }
