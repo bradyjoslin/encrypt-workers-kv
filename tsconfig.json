@@ -8,7 +8,7 @@
     "strict": true,
     "preserveConstEnums": true,
     "moduleResolution": "node",
-    "sourceMap": true,
+    "sourceMap": false,
     "esModuleInterop": true
   },
   "include": [
