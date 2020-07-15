@@ -1,22 +1,25 @@
 import { putEncryptedKV, getDecryptedKV } from '../../encrypted-workers-kv'
+const password = PASSWORD
 
 export async function handleRequest(request: Request): Promise<Response> {
-  const password = PASSWORD
-  let data =
-    'This is a long message with emojis 🏋️‍♀️, urls https://bradyjoslin.com, and json {"hello":"world!"}.'
-
-  try {
-    await putEncryptedKV(ENCRYPTED, 'data', data, password)
-  } catch (e) {
-    return new Response(e.message, { status: e.status })
-  }
-
-  try {
-    let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
-    return new Response(`input: '${data}' <br/> output: '${decryptedData}'`, {
-      headers: { 'content-type': 'text/html; charset=utf-8' },
-    })
-  } catch (e) {
-    return new Response(e.message, { status: e.status })
+  if (request.method === 'PUT') {
+    let data = await request.text()
+    try {
+      await putEncryptedKV(ENCRYPTED, 'data', data, password)
+      return new Response('Secret stored successfully')
+    } catch (e) {
+      return new Response(e.message, { status: e.status })
+    }
+  } else if (request.method === 'GET') {
+    try {
+      let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
+      return new Response(`${decryptedData}`, {
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      })
+    } catch (e) {
+      return new Response(e.message, { status: e.status })
+    }
+  } else {
+    return new Response('Request method not supported', { status: 500 })
   }
 }
