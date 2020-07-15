@@ -2,8 +2,8 @@
   "name": "encrypted-workers-kv",
   "version": "0.0.1",
   "description": "Wrapper on Workers KV to store encrypted values",
-  "main": "./dist/crypto.ts",
-  "types": "./dist/main.d.ts",
+  "main": "./encrypted-workers-kv/index.ts",
+  "types": "./encrypted-workers-kv/index.d.ts",
   "scripts": {
     "build": "tsc --declaration"
   },

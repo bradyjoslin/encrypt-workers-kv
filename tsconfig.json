@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./encrypted-workers-kv",
     "module": "commonjs",
     "target": "esnext",
     "lib": ["esnext", "webworker"],
