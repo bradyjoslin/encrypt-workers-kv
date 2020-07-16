@@ -5,8 +5,10 @@
   "main": "./encrypted-workers-kv/index.ts",
   "types": "./encrypted-workers-kv/index.d.ts",
   "scripts": {
-    "build": "tsc --declaration",
-    "test": "ava"
+    "build:clean": "rimraf ./encrypted-workers-kv",
+    "build": "npm run build:clean && tsc --declaration",
+    "test:deploy": "npm run build && cd test-worker/ && wrangler publish && cd ../",
+    "test": "ava test/test.js"
   },
   "author": "Brady Joslin [brady@bradyjoslin.com]",
   "license": "MIT",
@@ -15,6 +17,7 @@
     "ava": "^3.10.1",
     "node-fetch": "^2.6.0",
     "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
     "typescript": "^3.9.6"
   }
 }
