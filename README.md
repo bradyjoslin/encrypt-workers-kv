@@ -40,13 +40,14 @@ An overview of the logical steps used for encryption and decryption in `crypto.t
 
 Wrapper on Workers KV put command that encrypts data prior to storage
 
-| Param     | Type                     | Description                                                                                                          |
-| --------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| namespace | <code>KVNamespace</code> | the binding to the namespace that script references                                                                  |
-| key       | <code>string</code>      | the key in the namespace used to reference the stored value                                                          |
-| data      | <code>string</code>      | the data to encrypt and store in KV                                                                                  |
-| password  | <code>string</code>      | the password used to encrypt the data                                                                                |
-| options   | <code>Object</code>      | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+| Param      | Type                     | Description                                                                                                          |
+| ---------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| namespace  | <code>KVNamespace</code> | the binding to the namespace that script references                                                                  |
+| key        | <code>string</code>      | the key in the namespace used to reference the stored value                                                          |
+| data       | <code>string</code>      | the data to encrypt and store in KV                                                                                  |
+| password   | <code>string</code>      | the password used to encrypt the data                                                                                |
+| iterations | <code>number</code>      | optional number of iterations used by the PBKDF2 to derive the key. Default 10000                                    |
+| options    | <code>Object</code>      | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
 
 Returns encrypted value as ArrayBuffer - `Promise<ArrayBuffer>`.
 
@@ -56,11 +57,12 @@ Returns encrypted value as ArrayBuffer - `Promise<ArrayBuffer>`.
 
 Wrapper on Workers KV get command that decrypts data after getting from storage
 
-| Param     | Type                     | Description                                                 |
-| --------- | ------------------------ | ----------------------------------------------------------- |
-| namespace | <code>KVNamespace</code> | the binding to the namespace that script references         |
-| key       | <code>string</code>      | the key in the namespace used to reference the stored value |
-| password  | <code>string</code>      | the password used to encrypt the data                       |
+| Param      | Type                     | Description                                                                       |
+| ---------- | ------------------------ | --------------------------------------------------------------------------------- |
+| namespace  | <code>KVNamespace</code> | the binding to the namespace that script references                               |
+| key        | <code>string</code>      | the key in the namespace used to reference the stored value                       |
+| password   | <code>string</code>      | the password used to encrypt the data                                             |
+| iterations | <code>number</code>      | optional number of iterations used by the PBKDF2 to derive the key. Default 10000 |
 
 Returns decrypted value as string - `Promise<string>`
 

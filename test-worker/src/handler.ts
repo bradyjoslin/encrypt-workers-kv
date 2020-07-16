@@ -5,14 +5,19 @@ export async function handleRequest(request: Request): Promise<Response> {
   if (request.method === 'PUT') {
     let data = await request.text()
     try {
-      await putEncryptedKV(ENCRYPTED, 'data', data, password)
+      await putEncryptedKV(ENCRYPTED, 'data', data, password, 10001)
       return new Response('Secret stored successfully')
     } catch (e) {
       return new Response(e.message, { status: e.status })
     }
   } else if (request.method === 'GET') {
     try {
-      let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
+      let decryptedData = await getDecryptedKV(
+        ENCRYPTED,
+        'data',
+        password,
+        10001,
+      )
       return new Response(`${decryptedData}`, {
         headers: { 'content-type': 'text/html; charset=utf-8' },
       })

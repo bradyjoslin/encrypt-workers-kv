@@ -16,6 +16,7 @@ const dec = new TextDecoder()
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} data the data to encrypt and store in KV
  * @param {string} password the password used to encrypt the data
+ * @param {number} iterations optional number of iterations used by the PBKDF2 to derive the key.  Default 10000
  * @param {Object} options optional KV put fields
  * @returns {Promise<ArrayBuffer>} a promise for an encrypted value as ArrayBuffer
  * */
@@ -24,6 +25,7 @@ async function putEncryptedKV(
   key: string,
   data: string,
   password: string,
+  iterations: number = 10000,
   options?: {
     expiration?: string | number
     expirationTtl?: string | number
@@ -31,7 +33,7 @@ async function putEncryptedKV(
 ): Promise<ArrayBuffer> {
   let encryptedData
   try {
-    encryptedData = await encryptData(data, password)
+    encryptedData = await encryptData(data, password, iterations)
   } catch (e) {
     throw e
   }
@@ -54,19 +56,21 @@ async function putEncryptedKV(
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} password the password used to encrypt the data
+ * @param {number} iterations optional number of iterations used by the PBKDF2 to derive the key.  Default 10000
  * @returns {Promise<string>} a promise for a decrypted value as string
  * */
 async function getDecryptedKV(
   namespace: KVNamespace,
   key: string,
   password: string,
+  iterations: number = 10000,
 ): Promise<string> {
   let kvEncryptedData = await namespace.get(key, 'arrayBuffer')
   if (kvEncryptedData === null) {
     throw new NotFoundError(`could not find ${key} in your namespace`)
   }
   try {
-    let decryptedData = await decryptData(kvEncryptedData, password)
+    let decryptedData = await decryptData(kvEncryptedData, password, iterations)
     return decryptedData
   } catch (e) {
     throw e
@@ -82,12 +86,13 @@ const deriveKey = (
   passwordKey: CryptoKey,
   salt: Uint8Array,
   keyUsage: CryptoKey['usages'],
+  iterations: number = 10000,
 ): PromiseLike<CryptoKey> =>
   crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
       salt: salt,
-      iterations: 10000,
+      iterations: iterations,
       hash: 'SHA-256',
     },
     passwordKey,
@@ -99,12 +104,13 @@ const deriveKey = (
 async function encryptData(
   secretData: string,
   password: string,
+  iterations: number = 10000,
 ): Promise<ArrayBuffer> {
   try {
     const salt = crypto.getRandomValues(new Uint8Array(16))
     const iv = crypto.getRandomValues(new Uint8Array(12))
     const passwordKey = await getPasswordKey(password)
-    const aesKey = await deriveKey(passwordKey, salt, ['encrypt'])
+    const aesKey = await deriveKey(passwordKey, salt, ['encrypt'], iterations)
     const encryptedContent = await crypto.subtle.encrypt(
       {
         name: 'AES-GCM',
@@ -133,6 +139,7 @@ async function encryptData(
 async function decryptData(
   encryptedData: ArrayBuffer,
   password: string,
+  iterations: number = 10000,
 ): Promise<string> {
   try {
     const encryptedDataBuff = new Uint8Array(encryptedData)
@@ -140,7 +147,7 @@ async function decryptData(
     const iv = encryptedDataBuff.slice(16, 16 + 12)
     const data = encryptedDataBuff.slice(16 + 12)
     const passwordKey = await getPasswordKey(password)
-    const aesKey = await deriveKey(passwordKey, salt, ['decrypt'])
+    const aesKey = await deriveKey(passwordKey, salt, ['decrypt'], iterations)
     const decryptedContent = await crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
