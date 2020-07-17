@@ -12,12 +12,7 @@ export async function handleRequest(request: Request): Promise<Response> {
     }
   } else if (request.method === 'GET') {
     try {
-      let decryptedData = await getDecryptedKV(
-        ENCRYPTED,
-        'data',
-        password,
-        10001,
-      )
+      let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
       return new Response(`${decryptedData}`, {
         headers: { 'content-type': 'text/html; charset=utf-8' },
       })

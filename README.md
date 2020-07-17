@@ -57,12 +57,11 @@ Returns encrypted value as ArrayBuffer - `Promise<ArrayBuffer>`.
 
 Wrapper on Workers KV get command that decrypts data after getting from storage
 
-| Param      | Type                     | Description                                                                       |
-| ---------- | ------------------------ | --------------------------------------------------------------------------------- |
-| namespace  | <code>KVNamespace</code> | the binding to the namespace that script references                               |
-| key        | <code>string</code>      | the key in the namespace used to reference the stored value                       |
-| password   | <code>string</code>      | the password used to encrypt the data                                             |
-| iterations | <code>number</code>      | optional number of iterations used by the PBKDF2 to derive the key. Default 10000 |
+| Param     | Type                     | Description                                                 |
+| --------- | ------------------------ | ----------------------------------------------------------- |
+| namespace | <code>KVNamespace</code> | the binding to the namespace that script references         |
+| key       | <code>string</code>      | the key in the namespace used to reference the stored value |
+| password  | <code>string</code>      | the password used to encrypt the data                       |
 
 Returns decrypted value as string - `Promise<string>`
 

@@ -56,21 +56,20 @@ async function putEncryptedKV(
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} password the password used to encrypt the data
- * @param {number} iterations optional number of iterations used by the PBKDF2 to derive the key.  Default 10000
  * @returns {Promise<string>} a promise for a decrypted value as string
  * */
 async function getDecryptedKV(
   namespace: KVNamespace,
   key: string,
   password: string,
-  iterations: number = 10000,
 ): Promise<string> {
   let kvEncryptedData = await namespace.get(key, 'arrayBuffer')
   if (kvEncryptedData === null) {
     throw new NotFoundError(`could not find ${key} in your namespace`)
   }
+
   try {
-    let decryptedData = await decryptData(kvEncryptedData, password, iterations)
+    let decryptedData = await decryptData(kvEncryptedData, password)
     return decryptedData
   } catch (e) {
     throw e
@@ -121,15 +120,20 @@ async function encryptData(
     )
 
     const encryptedContentArr = new Uint8Array(encryptedContent)
+    let iterationsArr = new Uint8Array(enc.encode(iterations.toString()))
+
     let buff = new Uint8Array(
-      salt.byteLength + iv.byteLength + encryptedContentArr.byteLength,
+      iterationsArr.byteLength +
+        salt.byteLength +
+        iv.byteLength +
+        encryptedContentArr.byteLength,
     )
-    buff.set(new Uint8Array(salt), 0)
-    buff.set(new Uint8Array(iv), salt.byteLength)
-    buff.set(
-      new Uint8Array(encryptedContentArr),
-      salt.byteLength + iv.byteLength,
-    )
+    let bytes = 0
+    buff.set(iterationsArr, bytes)
+    buff.set(salt, (bytes += iterationsArr.byteLength))
+    buff.set(iv, (bytes += salt.byteLength))
+    buff.set(encryptedContentArr, (bytes += iv.byteLength))
+
     return buff.buffer
   } catch (e) {
     throw new EncryptionError(`Error encrypting value: ${e.message}`)
@@ -139,13 +143,19 @@ async function encryptData(
 async function decryptData(
   encryptedData: ArrayBuffer,
   password: string,
-  iterations: number = 10000,
 ): Promise<string> {
   try {
     const encryptedDataBuff = new Uint8Array(encryptedData)
-    const salt = encryptedDataBuff.slice(0, 16)
-    const iv = encryptedDataBuff.slice(16, 16 + 12)
-    const data = encryptedDataBuff.slice(16 + 12)
+
+    let bytes = 0
+    const iterations = Number(
+      dec.decode(encryptedDataBuff.slice(bytes, (bytes += 5))),
+    )
+
+    const salt = new Uint8Array(encryptedDataBuff.slice(bytes, (bytes += 16)))
+    const iv = new Uint8Array(encryptedDataBuff.slice(bytes, (bytes += 12)))
+    const data = new Uint8Array(encryptedDataBuff.slice(bytes))
+
     const passwordKey = await getPasswordKey(password)
     const aesKey = await deriveKey(passwordKey, salt, ['decrypt'], iterations)
     const decryptedContent = await crypto.subtle.decrypt(
