@@ -1,4 +1,4 @@
-import { putEncryptedKV, getDecryptedKV } from '../../encrypted-workers-kv'
+import { putEncryptedKV, getDecryptedKV } from '../../'
 const password = PASSWORD
 
 export async function handleRequest(request: Request): Promise<Response> {
