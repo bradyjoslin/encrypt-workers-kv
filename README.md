@@ -6,7 +6,7 @@ By deafult all data stored in Cloudflare [Workers KV](https://developers.cloudfl
 
 > All values are encrypted at rest with 256-bit AES-GCM, and only decrypted by the process executing your Worker scripts or responding to your API requests. ([docs](https://developers.cloudflare.com/workers/reference/storage))
 
-However, there are a variety of reasons you may want to add your own encryption to the values stored in Workers KV. For example, permissions to access Workers KV are scoped at the account level. For those working in shared team or organizational accounts, this means you cannot lock down a specific KV namespace to only specific people with access to Workers. This can present challenges when wanting to store sensitive information in a KV namespace, as anyone in that account with access to Workers can access and read the stored data.
+However, there are a variety of reasons you may want to add your own encryption to the values stored in Workers KV. For example, permissions to access Workers KV are scoped at the account level. For those working in shared team or organizational accounts, this means you cannot limit access to specific KV namespaces, as anyone in that account with access to Workers can read the stored data in all KV namespaces in that account.
 
 ## Logic Flow
 
