@@ -9,4 +9,4 @@ test-worker/worker/
 **/node_modules/
 .cargo-ok
 transpiled
-encrypted-workers-kv/
+encrypt-workers-kv/

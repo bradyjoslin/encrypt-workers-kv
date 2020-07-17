@@ -1,9 +1,9 @@
 {
-  "name": "encrypted-workers-kv",
+  "name": "encrypt-workers-kv",
   "version": "0.0.1-beta.1",
   "description": "Wrapper on Workers KV to encrypt stored values",
-  "main": "./encrypted-workers-kv/index.js",
-  "types": "./encrypted-workers-kv/index.d.ts",
+  "main": "./encrypt-workers-kv/index.js",
+  "types": "./encrypt-workers-kv/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bradyjoslin/encrypted-workers-kv.git"
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/bradyjoslin/encrypted-workers-kv#readme",
   "scripts": {
-    "build:clean": "rimraf ./encrypted-workers-kv",
+    "build:clean": "rimraf ./encrypt-workers-kv",
     "build": "npm run build:clean && tsc --declaration",
     "test:deploy": "npm run build && cd test-worker/ && wrangler publish && cd ../",
     "test": "ava test/test.js"
