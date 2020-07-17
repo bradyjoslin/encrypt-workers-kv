@@ -1,9 +1,23 @@
 {
   "name": "encrypted-workers-kv",
-  "version": "0.0.1",
-  "description": "Wrapper on Workers KV to store encrypted values",
-  "main": "./encrypted-workers-kv/index.ts",
+  "version": "0.0.1-beta.1",
+  "description": "Wrapper on Workers KV to encrypt stored values",
+  "main": "./encrypted-workers-kv/index.js",
   "types": "./encrypted-workers-kv/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradyjoslin/encrypted-workers-kv.git"
+  },
+  "keywords": [
+    "kv",
+    "cloudflare",
+    "workers",
+    "encryption"
+  ],
+  "bugs": {
+    "url": "https://github.com/bradyjoslin/encrypted-workers-kv/issues"
+  },
+  "homepage": "https://github.com/bradyjoslin/encrypted-workers-kv#readme",
   "scripts": {
     "build:clean": "rimraf ./encrypted-workers-kv",
     "build": "npm run build:clean && tsc --declaration",
