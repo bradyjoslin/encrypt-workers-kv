@@ -1,12 +1,16 @@
-# Example Encrypting Workers KV Using Web Crypto
+# Encrypt Cloudflare Workers KV
 
-Demonstrates a way to encrypt and decrypt data using the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) with [Cloudflare Workers](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to store encrypted data in [Workers KV](https://developers.cloudflare.com/workers/reference/storage).
+This library provides wrappers on the `put` and `get` functions from the Cloudflare Workers runtime API for writing to and reading from [Workers KV](https://developers.cloudflare.com/workers/reference/apis), encrypting values before `put` and unecrypting values after `get`. Encryption is implemented using the [Web Crypto API](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to derive AES-GCM keys from a password based key (PBKDF2).
 
-This basic example encrypts a value and stores it in Workers KV as an ArrayBuffer, then gets the stored value and decrypts it. The AES-GCM encryption and decryption keys are derived from a password based key (PBKDF2).
+By deafult all data stored in Cloudflare [Workers KV](https://developers.cloudflare.com/workers/reference/storage) is encrypted at rest:
+
+> All values are encrypted at rest with 256-bit AES-GCM, and only decrypted by the process executing your Worker scripts or responding to your API requests. ([docs](https://developers.cloudflare.com/workers/reference/storage))
+
+However, there are a variety of reasons you may want to add your own encryption to the values stored in Workers KV. For example, permissions to access Workers KV are scoped at the account level. For those working in shared team or organizational accounts, this means you cannot lock down a specific KV namespace to only specific people with access to Workers. This can present challenges when wanting to store sensitive information in a KV namespace, as anyone in that account with access to Workers can access and read the stored data.
 
 ## Logic Flow
 
-An overview of the logical steps used for encryption and decryption in `crypto.ts`.
+An overview of the logical steps used for encryption and decryption in `src/index.ts`.
 
 **Encryption:**
 
@@ -49,7 +53,16 @@ Wrapper on Workers KV put command that encrypts data prior to storage
 | iterations | <code>number</code>      | optional number of iterations used by the PBKDF2 to derive the key. Default 10000                                    |
 | options    | <code>Object</code>      | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
 
-Returns encrypted value as ArrayBuffer - `Promise<ArrayBuffer>`.
+Sample implementation:
+
+```javascript
+try {
+  await putEncryptedKV(ENCRYPTED, 'data', data, password)
+  return new Response('Secret stored successfully')
+} catch (e) {
+  return new Response(e.message, { status: e.status })
+}
+```
 
 <a name="getDecryptedKV"></a>
 
@@ -65,21 +78,32 @@ Wrapper on Workers KV get command that decrypts data after getting from storage
 
 Returns decrypted value as string - `Promise<string>`
 
-## Deploying
+Sample implementation:
 
-Configure wrangler.toml with your account information.
+```javascript
+try {
+  let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
+  return new Response(`${decryptedData}`, {
+    headers: { 'content-type': 'text/html; charset=utf-8' },
+  })
+} catch (e) {
+  return new Response(e.message, { status: e.status })
+}
+```
 
-Create a new Workers KV namespace and add the configuration to wrangler.toml
+## Build and Test
+
+A test worker is used to test the library, located in `test-worker/`. Configure `wrangler.toml` in that folder with your account information. Then, create a new Workers KV namespace and add the configuration to wrangler.toml.
 
 `wrangler kv:namespace create "ENCRYPTED"`
 
-Add the password for PBKDF2 as a Workers Secret
+Add the password for PBKDF2 as a Workers Secret.
 
 `wrangler secret put PASSWORD`
 
-Deploy
+To deploy the test worker and run the the automated tests, change directory back to the project root directory and:
 
-`wrangler publish`
+`npm run test:deploy && npm run test`
 
 ## References
 
