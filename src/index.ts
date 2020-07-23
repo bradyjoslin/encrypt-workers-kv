@@ -14,7 +14,7 @@ const dec = new TextDecoder()
  *
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
- * @param {string} data the data to encrypt and store in KV
+ * @param {string | ArrayBuffer} data the data to encrypt and store in KV
  * @param {string} password the password used to encrypt the data
  * @param {number} iterations optional number of iterations used by the PBKDF2 to derive the key.  Default 10000
  * @param {Object} options optional KV put fields
@@ -23,7 +23,7 @@ const dec = new TextDecoder()
 async function putEncryptedKV(
   namespace: KVNamespace,
   key: string,
-  data: string,
+  data: string | ArrayBuffer,
   password: string,
   iterations: number = 10000,
   options?: {
@@ -31,6 +31,7 @@ async function putEncryptedKV(
     expirationTtl?: string | number
   },
 ): Promise<ArrayBuffer> {
+  data = typeof data === 'string' ? enc.encode(data) : data
   let encryptedData
   try {
     encryptedData = await encryptData(data, password, iterations)
@@ -56,13 +57,13 @@ async function putEncryptedKV(
  * @param {KVNamespace} namespace the binding to the namespace that script references
  * @param {string} key the key in the namespace used to reference the stored value
  * @param {string} password the password used to encrypt the data
- * @returns {Promise<string>} a promise for a decrypted value as string
+ * @returns {Promise<ArrayBuffer>} a promise for a decrypted value as ArrayBuffer
  * */
 async function getDecryptedKV(
   namespace: KVNamespace,
   key: string,
   password: string,
-): Promise<string> {
+): Promise<ArrayBuffer> {
   let kvEncryptedData = await namespace.get(key, 'arrayBuffer')
   if (kvEncryptedData === null) {
     throw new NotFoundError(`could not find ${key} in your namespace`)
@@ -101,7 +102,7 @@ const deriveKey = (
   )
 
 async function encryptData(
-  secretData: string,
+  secretData: ArrayBuffer,
   password: string,
   iterations: number = 10000,
 ): Promise<ArrayBuffer> {
@@ -116,7 +117,7 @@ async function encryptData(
         iv: iv,
       },
       aesKey,
-      enc.encode(secretData),
+      secretData,
     )
 
     const encryptedContentArr = new Uint8Array(encryptedContent)
@@ -143,7 +144,7 @@ async function encryptData(
 async function decryptData(
   encryptedData: ArrayBuffer,
   password: string,
-): Promise<string> {
+): Promise<ArrayBuffer> {
   try {
     const encryptedDataBuff = new Uint8Array(encryptedData)
 
@@ -166,7 +167,7 @@ async function decryptData(
       aesKey,
       data,
     )
-    return dec.decode(decryptedContent)
+    return decryptedContent
   } catch (e) {
     throw new DecryptionError(`Error decrypting value: ${e.message}`)
   }
