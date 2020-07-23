@@ -1,6 +1,6 @@
 # Encrypt Cloudflare Workers KV
 
-This library provides wrappers on the `put` and `get` functions from the Cloudflare Workers runtime API for writing to and reading from [Workers KV](https://developers.cloudflare.com/workers/reference/apis), encrypting values before `put` and unecrypting values after `get`. Encryption is implemented using the [Web Crypto API](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to derive AES-GCM keys from a password based key (PBKDF2).
+This library provides wrappers on the `put` and `get` functions from the Cloudflare Workers runtime API for writing to and reading from [Workers KV](https://developers.cloudflare.com/workers/reference/apis), encrypting values before `put` and decrypting values after `get`. Encryption is implemented using the [Web Crypto API](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to derive AES-GCM keys from a password based key (PBKDF2).
 
 By default all data stored in Cloudflare [Workers KV](https://developers.cloudflare.com/workers/reference/storage) is encrypted at rest:
 
