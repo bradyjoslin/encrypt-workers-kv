@@ -1,4 +1,3 @@
-import { KVNamespace } from '@cloudflare/workers-types'
 import {
   PutError,
   NotFoundError,
