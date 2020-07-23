@@ -1,4 +1,4 @@
-import { KVNamespace } from '@cloudflare/workers-types'
+export {}
 
 declare global {
   const ENCRYPTED: KVNamespace
