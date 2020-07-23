@@ -1,12 +1,16 @@
-# Example Encrypting Workers KV Using Web Crypto
+# Encrypt Cloudflare Workers KV
 
-Demonstrates a way to encrypt and decrypt data using the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) with [Cloudflare Workers](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to store encrypted data in [Workers KV](https://developers.cloudflare.com/workers/reference/storage).
+This library provides wrappers on the `put` and `get` functions from the Cloudflare Workers runtime API for writing to and reading from [Workers KV](https://developers.cloudflare.com/workers/reference/apis), encrypting values before `put` and unecrypting values after `get`. Encryption is implemented using the [Web Crypto API](https://developers.cloudflare.com/workers/reference/apis/web-crypto/) to derive AES-GCM keys from a password based key (PBKDF2).
 
-This basic example encrypts a value and stores it in Workers KV as an ArrayBuffer, then gets the stored value and decrypts it. The AES-GCM encryption and decryption keys are derived from a password based key (PBKDF2).
+By deafult all data stored in Cloudflare [Workers KV](https://developers.cloudflare.com/workers/reference/storage) is encrypted at rest:
+
+> All values are encrypted at rest with 256-bit AES-GCM, and only decrypted by the process executing your Worker scripts or responding to your API requests. ([docs](https://developers.cloudflare.com/workers/reference/storage))
+
+However, there are a variety of reasons you may want to add your own encryption to the values stored in Workers KV. For example, permissions to access Workers KV are scoped at the account level. For those working in shared team or organizational accounts, this means you cannot limit access to specific KV namespaces, as anyone in that account with access to Workers can read the stored data in all KV namespaces in that account.
 
 ## Logic Flow
 
-An overview of the logical steps used for encryption and decryption in `crypto.js`.
+An overview of the logical steps used for encryption and decryption in `src/index.ts`.
 
 **Encryption:**
 
@@ -40,13 +44,28 @@ An overview of the logical steps used for encryption and decryption in `crypto.j
 
 Wrapper on Workers KV put command that encrypts data prior to storage
 
-| Param     | Type                | Description                                                                                                          |
-| --------- | ------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| namespace | <code>any</code>    | the binding to the namespace that script references                                                                  |
-| key       | <code>string</code> | the key in the namespace used to reference the stored value                                                          |
-| data      | <code>any</code>    | the data to encrypt and store in KV                                                                                  |
-| password  | <code>string</code> | the password used to encrypt the data                                                                                |
-| options   | <code>Object</code> | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+| Param      | Type                                 | Description                                                                                                          |
+| ---------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| namespace  | <code>KVNamespace</code>             | the binding to the namespace that script references                                                                  |
+| key        | <code>string</code>                  | the key in the namespace used to reference the stored value                                                          |
+| data       | <code>string</code> or `ArrayBuffer` | the data to encrypt and store in KV                                                                                  |
+| password   | <code>string</code>                  | the password used to encrypt the data                                                                                |
+| iterations | <code>number</code>                  | optional number of iterations used by the PBKDF2 to derive the key. Default 10000                                    |
+| options    | <code>Object</code>                  | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
+
+Returns encrypted value as string - `Promise<ArrayBuffer>`
+
+Sample implementation:
+
+```javascript
+let data = await request.text()
+try {
+  await putEncryptedKV(ENCRYPTED, 'data', data, password)
+  return new Response('Secret stored successfully')
+} catch (e) {
+  return new Response(e.message, { status: e.status })
+}
+```
 
 <a name="getDecryptedKV"></a>
 
@@ -54,27 +73,41 @@ Wrapper on Workers KV put command that encrypts data prior to storage
 
 Wrapper on Workers KV get command that decrypts data after getting from storage
 
-| Param     | Type                | Description                                                 |
-| --------- | ------------------- | ----------------------------------------------------------- |
-| namespace | <code>any</code>    | the binding to the namespace that script references         |
-| key       | <code>string</code> | the key in the namespace used to reference the stored value |
-| password  | <code>string</code> | the password used to encrypt the data                       |
+| Param     | Type                     | Description                                                 |
+| --------- | ------------------------ | ----------------------------------------------------------- |
+| namespace | <code>KVNamespace</code> | the binding to the namespace that script references         |
+| key       | <code>string</code>      | the key in the namespace used to reference the stored value |
+| password  | <code>string</code>      | the password used to encrypt the data                       |
 
-## Deploying
+Returns decrypted value as string - `Promise<ArrayBuffer>`
 
-Configure wrangler.toml with your account information.
+Sample implementation:
 
-Create a new Workers KV namespace and add the configuration to wrangler.toml
+```javascript
+try {
+  let decryptedData = await getDecryptedKV(ENCRYPTED, 'data', password)
+  let strDecryptedData = dec.decode(decryptedData)
+  return new Response(`${strDecryptedData}`, {
+    headers: { 'content-type': 'text/html; charset=utf-8' },
+  })
+} catch (e) {
+  return new Response(e.message, { status: e.status })
+}
+```
+
+## Build and Test
+
+A test worker is used to test the library, located in `test-worker/`. Configure `wrangler.toml` in that folder with your account information. Then, create a new Workers KV namespace and add the configuration to wrangler.toml.
 
 `wrangler kv:namespace create "ENCRYPTED"`
 
-Add the password for PBKDF2 as a Workers Secret
+Add the password for PBKDF2 as a Workers Secret.
 
 `wrangler secret put PASSWORD`
 
-Deploy
+To deploy the test worker and run the the automated tests, change directory back to the project root directory and:
 
-`wrangler publish`
+`npm run test:deploy && npm run test`
 
 ## References
 

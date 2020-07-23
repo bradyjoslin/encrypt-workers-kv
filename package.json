@@ -1,16 +1,37 @@
 {
-  "private": true,
-  "name": "encrypted-workers-kv",
-  "version": "1.0.0",
-  "description": "A template for storing encrypted data in Workers KV",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write '**/*.{js,css,json,md}'"
+  "name": "encrypt-workers-kv",
+  "version": "0.0.1-beta.1",
+  "description": "Wrapper on Workers KV to encrypt stored values",
+  "main": "./encrypt-workers-kv/index.js",
+  "types": "./encrypt-workers-kv/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradyjoslin/encrypted-workers-kv.git"
   },
-  "author": "Joslin, Brady W (Brady) <brady@bradyjoslin.com>",
+  "keywords": [
+    "kv",
+    "cloudflare",
+    "workers",
+    "encryption"
+  ],
+  "bugs": {
+    "url": "https://github.com/bradyjoslin/encrypted-workers-kv/issues"
+  },
+  "homepage": "https://github.com/bradyjoslin/encrypted-workers-kv#readme",
+  "scripts": {
+    "build:clean": "rimraf ./encrypt-workers-kv",
+    "build": "npm run build:clean && tsc --declaration",
+    "test:deploy": "npm run build && cd test-worker/ && wrangler publish && cd ../",
+    "test": "ava test/test.js"
+  },
+  "author": "Brady Joslin [brady@bradyjoslin.com]",
   "license": "MIT",
   "devDependencies": {
-    "prettier": "^1.18.2"
+    "@cloudflare/workers-types": "^1.0.9",
+    "ava": "^3.10.1",
+    "node-fetch": "^2.6.0",
+    "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^3.9.6"
   }
 }

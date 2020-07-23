@@ -1,10 +1,12 @@
 /target
-/dist
+**/dist
 **/*.rs.bk
 Cargo.lock
 bin/
 pkg/
 wasm-pack.log
-worker/
-node_modules/
+test-worker/worker/
+**/node_modules/
 .cargo-ok
+transpiled
+encrypt-workers-kv/

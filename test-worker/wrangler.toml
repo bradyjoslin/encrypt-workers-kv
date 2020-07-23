@@ -2,6 +2,7 @@ account_id = "d3765f1c5f3d3ed76be2701b78510d29"
 name = "encrypted-workers-kv"
 route = ""
 type = "webpack"
+webpack_config = "webpack.config.js"
 workers_dev = true
 zone_id = ""
 
