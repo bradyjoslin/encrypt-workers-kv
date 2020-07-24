@@ -8,6 +8,12 @@ By default all data stored in Cloudflare [Workers KV](https://developers.cloudfl
 
 However, there are a variety of reasons you may want to add your own encryption to the values stored in Workers KV. For example, permissions to access Workers KV are scoped at the account level. For those working in shared team or organizational accounts, this means you cannot limit access to specific KV namespaces, as anyone in that account with access to Workers can read the stored data in all KV namespaces in that account.
 
+## Installation
+
+Use npm to install this package while in the root directory of your Workers project:
+
+`npm i encrypt-workers-kv`
+
 ## Logic Flow
 
 An overview of the logical steps used for encryption and decryption in `src/index.ts`.
