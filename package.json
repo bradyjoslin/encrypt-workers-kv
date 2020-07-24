@@ -15,7 +15,7 @@
     "encryption"
   ],
   "files": [
-    "dist/"
+    "dist/**/*"
   ],
   "bugs": {
     "url": "https://github.com/bradyjoslin/encrypt-workers-kv/issues"
