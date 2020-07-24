@@ -1,12 +1,12 @@
 {
   "name": "encrypt-workers-kv",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "Wrapper on Workers KV to encrypt stored values",
-  "main": "./encrypt-workers-kv/index.js",
-  "types": "./encrypt-workers-kv/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bradyjoslin/encrypted-workers-kv.git"
+    "url": "git+https://github.com/bradyjoslin/encrypt-workers-kv.git"
   },
   "keywords": [
     "kv",
@@ -14,13 +14,17 @@
     "workers",
     "encryption"
   ],
+  "files": [
+    "dist/**/*"
+  ],
   "bugs": {
-    "url": "https://github.com/bradyjoslin/encrypted-workers-kv/issues"
+    "url": "https://github.com/bradyjoslin/encrypt-workers-kv/issues"
   },
-  "homepage": "https://github.com/bradyjoslin/encrypted-workers-kv#readme",
+  "homepage": "https://github.com/bradyjoslin/encrypt-workers-kv#readme",
   "scripts": {
-    "build:clean": "rimraf ./encrypt-workers-kv",
+    "build:clean": "rimraf ./dist",
     "build": "npm run build:clean && tsc --declaration",
+    "prepare": "npm run test:deploy && npm run test",
     "test:deploy": "npm run build && cd test-worker/ && wrangler publish && cd ../",
     "test": "ava test/test.js"
   },
