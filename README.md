@@ -14,7 +14,7 @@ Use npm to install this package while in the root directory of your Workers proj
 
 `npm i encrypt-workers-kv`
 
-## Functions
+## Usage
 
 <dl>
 <dt><a href="#putEncryptedKV">putEncryptedKV(namespace, key, data, password, options)</a></dt>
@@ -36,7 +36,7 @@ Wrapper on Workers KV put command that encrypts data prior to storage
 | namespace  | <code>KVNamespace</code>             | the binding to the namespace that script references                                                                  |
 | key        | <code>string</code>                  | the key in the namespace used to reference the stored value                                                          |
 | data       | <code>string</code> or `ArrayBuffer` | the data to encrypt and store in KV                                                                                  |
-| password   | <code>string</code>                  | the password to be used to encrypt the data                                                                                |
+| password   | <code>string</code>                  | the password to be used to encrypt the data                                                                          |
 | iterations | <code>number</code>                  | optional number of iterations used by the PBKDF2 to derive the key. Default 10000                                    |
 | options    | <code>Object</code>                  | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
 
