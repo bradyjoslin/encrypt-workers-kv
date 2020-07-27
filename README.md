@@ -14,25 +14,6 @@ Use npm to install this package while in the root directory of your Workers proj
 
 `npm i encrypt-workers-kv`
 
-## Logic Flow
-
-An overview of the logical steps used for encryption and decryption in `src/index.ts`.
-
-**Encryption:**
-
-1. Create a password based key (PBKDF2) that will be used to derive the AES-GCM key used for encryption / decryption.
-1. Create an AES-GCM key using the PBKDF2 key and a randomized salt value.
-1. Encrypt the input data using the AES-GCM key and a randomized initialization vector (iv).
-1. The values used for the password, salt, iv for encryption are needed for decryption. Therefore, create an ArrayBuffer to be stored that includes the salt that was used when creating the password based key (PBKDF2), iv used for creating the AES key, and the encrypted content. The password should remain secret, so is stored as a [Worker Secret](https://developers.cloudflare.com/workers/reference/apis/environment-variables/#secrets).
-
-**Decryption:**
-
-1. Derive the salt, iv, and encrypted data from the ArrayBuffer.
-1. Create a password based key (PBKDF2) that will be used to derive the AES-GCM key used for encryption / decryption. Password must be the same used for encryption and is obtained from the Workers Secret.
-1. Create an AES-GCM key using the PBKDF2 key and the salt from the ArrayBuffer.
-1. Decrypt the input data using the AES-GCM key and the iv from the ArrayBuffer.
-1. Decode the decrypted value to a string.
-
 ## Functions
 
 <dl>
@@ -55,7 +36,7 @@ Wrapper on Workers KV put command that encrypts data prior to storage
 | namespace  | <code>KVNamespace</code>             | the binding to the namespace that script references                                                                  |
 | key        | <code>string</code>                  | the key in the namespace used to reference the stored value                                                          |
 | data       | <code>string</code> or `ArrayBuffer` | the data to encrypt and store in KV                                                                                  |
-| password   | <code>string</code>                  | the password used to encrypt the data                                                                                |
+| password   | <code>string</code>                  | the password to be used to encrypt the data                                                                                |
 | iterations | <code>number</code>                  | optional number of iterations used by the PBKDF2 to derive the key. Default 10000                                    |
 | options    | <code>Object</code>                  | optional KV put fields ([docs](https://developers.cloudflare.com/workers/reference/apis/kv/#creating-expiring-keys)) |
 
@@ -100,6 +81,24 @@ try {
   return new Response(e.message, { status: e.status })
 }
 ```
+
+## Logic Flow
+
+An explanation of the steps used behind the scenes for encryption and decryption in `src/index.ts`.
+
+**Encryption:**
+
+1. Creates a password based key (PBKDF2) that will be used to derive the AES-GCM key used for encryption / decryption.
+1. Creates an AES-GCM key using the PBKDF2 key and a randomized salt value.
+1. Encrypts the input data using the AES-GCM key and a randomized initialization vector (iv).
+1. The values used for the password, salt, iv for encryption are needed for decryption. Therefore, creates an ArrayBuffer to be stored that includes the salt that was used when creating the password based key (PBKDF2), iv used for creating the AES key, and the encrypted content. The password should remain secret, so recommend storing it as a [Worker Secret](https://developers.cloudflare.com/workers/reference/apis/environment-variables/#secrets).
+
+**Decryption:**
+
+1. Derives the salt, iv, and encrypted data from the ArrayBuffer.
+1. Creates a password based key (PBKDF2) that will be used to derive the AES-GCM key used for encryption / decryption. Password must be the same used for encryption and is obtained from the Workers Secret.
+1. Creates an AES-GCM key using the PBKDF2 key and the salt from the ArrayBuffer.
+1. Decrypts the input data using the AES-GCM key and the iv from the ArrayBuffer.
 
 ## Build and Test
 
