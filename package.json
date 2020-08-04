@@ -1,6 +1,6 @@
 {
   "name": "encrypt-workers-kv",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.2",
   "description": "Wrapper on Workers KV to encrypt stored values",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
