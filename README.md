@@ -114,8 +114,14 @@ To deploy the test worker and run the the automated tests, change directory back
 
 `npm run test:deploy && npm run test`
 
+## Sample Implementation
+
+A sample implementation is available in the [Workers Azure AD auth example](https://github.com/bradyjoslin/workers-azuread-example), which uses `encrypt-workers-kv` to encrypt session token information stored as values in Workers KV.
+
 ## References
+
+Further info on Web Crypto usage:
 
 - [Ernie Turner: Dodging Web Crypto API Landmines | Web Rebels 2018](https://www.youtube.com/watch?v=lbt2_M1hZeg)
 - [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
-- [bradyjoslin/webcrypto-example for using in browser](https://github.com/bradyjoslin/webcrypto-example)
+- Example usage in browser [bradyjoslin/webcrypto-example](https://github.com/bradyjoslin/webcrypto-example)
