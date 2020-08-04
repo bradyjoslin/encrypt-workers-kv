@@ -1,7 +1,7 @@
 {
   "name": "encrypt-workers-kv",
-  "version": "0.0.1-beta.2",
-  "description": "Wrapper on Workers KV to encrypt stored values",
+  "version": "0.0.2",
+  "description": "Encrypted put and get functions for Cloudflare Workers KV",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
