@@ -13,7 +13,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^2.0.0",
     "prettier": "^2.1.0",
-    "ts-loader": "^8.0.2",
+    "ts-loader": "^8.0.3",
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12"
