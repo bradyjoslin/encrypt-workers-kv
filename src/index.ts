@@ -40,9 +40,9 @@ async function putEncryptedKV(
 
   try {
     if (options) {
-      await namespace.put(key, encryptedData)
-    } else {
       await namespace.put(key, encryptedData, options)
+    } else {
+      await namespace.put(key, encryptedData)
     }
     return encryptedData
   } catch (e) {
