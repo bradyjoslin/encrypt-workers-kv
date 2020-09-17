@@ -1,6 +1,6 @@
 {
   "name": "encrypt-workers-kv",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Encrypted put and get functions for Cloudflare Workers KV",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

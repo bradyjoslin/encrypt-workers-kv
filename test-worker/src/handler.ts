@@ -8,7 +8,9 @@ export async function handleRequest(request: Request): Promise<Response> {
   if (request.method === 'PUT') {
     let data = await request.text()
     try {
-      await putEncryptedKV(ENCRYPTED, 'data', data, password, 10001)
+      await putEncryptedKV(ENCRYPTED, 'data', data, password, 10001, {
+        expirationTtl: 60,
+      })
       return new Response('Secret stored successfully')
     } catch (e) {
       return new Response(e.message, { status: e.status })
