@@ -31,7 +31,7 @@
   "author": "Brady Joslin [brady@bradyjoslin.com]",
   "license": "MIT",
   "devDependencies": {
-    "@cloudflare/workers-types": "^2.0.0",
+    "@cloudflare/workers-types": "^3.12.0",
     "ava": "^3.10.1",
     "node-fetch": "^2.6.0",
     "prettier": "^2.0.5",
