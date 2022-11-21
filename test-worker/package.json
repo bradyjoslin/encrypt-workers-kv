@@ -11,7 +11,7 @@
   "author": "author",
   "license": "MIT OR Apache-2.0",
   "devDependencies": {
-    "@cloudflare/workers-types": "^2.2.2",
+    "@cloudflare/workers-types": "^4.20221111.1",
     "prettier": "^2.3.2",
     "ts-loader": "^9.2.5",
     "typescript": "^4.3.5",
